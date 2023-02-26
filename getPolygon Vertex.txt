@@ -1,0 +1,13 @@
+// Use for field calculator, attribute rules in ArcGIS Pro
+
+// Polygon Vertex features are in rings attribute
+var rings = Geometry($feature).rings
+var vertex= ""
+
+// Loop Vertex
+for(var i in rings) {
+    for(var j=0 ; j<Count(rings[i])-1;j++)
+    // for polygons, the first and last point of a ring are the same, so skip last point
+    vertex += Text(Round(rings[i][j].x,2)) + ","  + Text(Round(rings[i][j].y,2))+";" 
+}
+return vertex
