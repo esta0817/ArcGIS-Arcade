@@ -1,0 +1,11 @@
+//Code : 
+getRandomValue()
+
+//Code block : 
+import numpy
+
+def getRandomValue():
+    num = numpy.random.random()*10%3
+    if (num<1) : return "A"
+    elif (num<2) : return "B"
+    else : return "C"
