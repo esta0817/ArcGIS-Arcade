@@ -1,0 +1,39 @@
+// Use for ArcGIS Online, Advanced format rules.
+
+
+// set Values
+var today_day = day(Today());
+var last_edited_day = day($datapoint["last_edited_date"]);
+var check_day = abs(today_day - last_edited_day);
+
+// set Color by updated day
+var color = IIf(check_day < '5', 'green', 'red');
+
+return {
+    //textColor:'',
+    //backgroundColor:'',
+    topText: 'Last Updated On',
+    topTextColor: color,
+    topTextOutlineColor: '',
+    topTextMaxSize: 'medium',
+    middleText: $datapoint["last_edited_date"],
+    //middleTextColor: ,
+    
+    middleTextOutlineColor: '',
+    middleTextMaxSize: 'large',
+    
+    
+    //bottomText: check_day +" & "+ color
+    //bottomTextColor: '',
+    //bottomTextOutlineColor: '',
+    //bottomTextMaxSize: 'medium',
+    //iconName:'',
+    //iconAlign:'left',
+    //iconColor:'',
+    //iconOutlineColor:'',
+    //noValue:false,
+    //attributes: {
+      // attribute1: '',
+      // attribute2: ''
+    // }
+  }
