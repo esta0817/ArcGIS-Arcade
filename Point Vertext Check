@@ -5,19 +5,25 @@ var pipe_fs = FeatureSetByName($datastore, "PIPE", ["PRSU_COD"], true);
 var startVertex = Geometry($feature).paths[0][0];
 var endVertex = Geometry($feature).paths[-1][-1];
 
-// make 0.01m buffer of stant and end vertex and union
+// make 0.01m buffer of stant and end vertex 
 var startBuffer = Buffer(startVertex, 0.01, "Meters")
 var endBuffer = Buffer(endVertex, 0.01, "Meters")
 
-var unionBufferVertex = Union([startBuffer, endBuffer]);
+// intersets of directional buffer and each line feature
+var pipe_SB = Intersects(pipe_fs, startBuffer);
+var pipe_EB = Intersects(pipe_fs, endBuffer);
 
-// intersets of union and line feature
-pipe_fs = Intersects(pipe_fs, unionBufferVertex);
+var startCode = [];
+var endCode = [];
 
-var flag = [];
-for (var pipe in pipe_fs){
-  Insert(flag, 0, pipe.PRSU_COD)
+for (var pipe in pipe_SB){
+  Insert(startCode, 0, pipe.PRSU_COD)
 }
+startCode = Distinct(startCode)
 
-// remain unique value(PRSU code)
-return text(Distinct(flag))
+for (var pipe in pipe_EB){
+  Insert(endCode, 0, pipe.PRSU_COD)
+}
+endCode = Distinct(endCode)
+
+return "start:"+text(startCode)+" end:"+text(endCode)
