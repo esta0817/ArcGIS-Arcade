@@ -1,0 +1,10 @@
+//line feature class in geodatabase
+var pipe_fs = FeatureSetByName($datastore, "PIPE", ["PRSU_COD"], true)
+pipe_fs = Intersects(pipe_fs, Buffer($feature,0.01,"Meters"))
+
+var flag = []
+  for (var pipe in pipe_fs){
+  Insert(flag, 0, pipe.PRSU_COD)
+}
+
+return text(Distinct(flag))
