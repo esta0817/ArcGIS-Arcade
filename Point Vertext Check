@@ -1,10 +1,23 @@
-//line feature class in geodatabase
-var pipe_fs = FeatureSetByName($datastore, "PIPE", ["PRSU_COD"], true)
-pipe_fs = Intersects(pipe_fs, Buffer($feature,0.01,"Meters"))
+// line feature class in geodatabase
+var pipe_fs = FeatureSetByName($datastore, "PIPE", ["PRSU_COD"], true);
 
-var flag = []
-  for (var pipe in pipe_fs){
+// find start and end vertex of line
+var startVertex = Geometry($feature).paths[0][0];
+var endVertex = Geometry($feature).paths[-1][-1];
+
+// make 0.01m buffer of stant and end vertex and union
+var startBuffer = Buffer(startVertex, 0.01, "Meters")
+var endBuffer = Buffer(endVertex, 0.01, "Meters")
+
+var unionBufferVertex = Union([startBuffer, endBuffer]);
+
+// intersets of union and line feature
+pipe_fs = Intersects(pipe_fs, unionBufferVertex);
+
+var flag = [];
+for (var pipe in pipe_fs){
   Insert(flag, 0, pipe.PRSU_COD)
 }
 
+// remain unique value(PRSU code)
 return text(Distinct(flag))
