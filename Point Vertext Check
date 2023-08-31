@@ -16,14 +16,18 @@ var pipe_EB = Intersects(pipe_fs, endBuffer);
 var startCode = [];
 var endCode = [];
 
+// review start features
 for (var pipe in pipe_SB){
   Insert(startCode, 0, pipe.PRSU_COD)
 }
-startCode = Distinct(startCode)
+startCode = Count(Distinct(startCode))
+startCode = IIf(startCode >1, 'true', 'false' );
 
+// review end features
 for (var pipe in pipe_EB){
   Insert(endCode, 0, pipe.PRSU_COD)
 }
-endCode = Distinct(endCode)
+endCode = Count(Distinct(endCode))
+endCode = IIf(endCode >1, 'true', 'false' );
 
 return "start:"+text(startCode)+" end:"+text(endCode)
