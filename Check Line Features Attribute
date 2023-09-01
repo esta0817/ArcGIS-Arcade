@@ -1,0 +1,26 @@
+// Review if there are two codes from adjacent lines
+// Pipe line, PRRG feature class in geodatabase
+var pipe_fs = FeatureSetByName($datastore, "PIPE", ["PRSU_COD"], true);
+var prrg_fs = FeatureSetByName($datastore, "PRRG", ["OBJECTID"], true);
+
+// find and union the start and end vertexs of line
+var startVertex = Geometry($feature).paths[0][0];
+var endVertex = Geometry($feature).paths[-1][-1];
+var unionVertex = Union([startVertex, endVertex]);
+
+// Subtracts the given vertex from the PRRG(정압기)
+unionVertex = Difference(unionVertex, Geometry(prrg_fs))
+
+// make 0.01m buffer of vertex 
+var unionBuffer = Buffer(unionVertex, 0.01, "Meters")
+
+// intersets of directional(start, end) buffer and each line feature
+var pipeIntersects = Intersects(pipe_fs, unionBuffer);
+
+// review whether each pipeline intersets have two more pressure codes
+var pipePressure = [];
+for (var pipe in pipeIntersects){
+  Insert(pipePressure, 0, pipe.PRSU_COD)
+  if(Count(Distinct(pipePressure))>1) {return "true";} //two pressure codes
+}
+return "false" //only one pressure code
