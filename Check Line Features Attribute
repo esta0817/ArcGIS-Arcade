@@ -1,3 +1,4 @@
+// Review if there are two presure codes from adjacent pipelines
 // Pipe line, PRRG feature class in geodatabase
 var pipe_fs = FeatureSetByName($datastore, "PIPE", ["PRSU_COD"], true);
 var prrg_fs = FeatureSetByName($datastore, "PRRG", ["OBJECTID"], true);
