@@ -1,29 +1,38 @@
-// line feature class in geodatabase
+// Pipe line, PRRG feature class in geodatabase
 var pipe_fs = FeatureSetByName($datastore, "PIPE", ["PRSU_COD"], true);
+var prrg_fs = FeatureSetByName($datastore, "PRRG", ["OBJECTID"], true);
 
 // find start and end vertex of line
 var startVertex = Geometry($feature).paths[0][0];
 var endVertex = Geometry($feature).paths[-1][-1];
 
+// Subtracts the given Vertex from the PRRG(정압기)
+startVertex = Difference(startVertex, Geometry(prrg_fs))
+endVertex = Difference(endVertex, Geometry(prrg_fs))
+
 // make 0.01m buffer of stant and end vertex 
 var startBuffer = Buffer(startVertex, 0.01, "Meters")
 var endBuffer = Buffer(endVertex, 0.01, "Meters")
 
-// intersets of directional buffer and each line feature
+//var prrgBuffer = Buffer(Geometry(prrg_fs), 0.01, "Meters")
+//startBuffer = Difference(startBuffer, prrgBuffer)
+//endBuffer = Difference(endBuffer, prrgBuffer)
+
+// intersets of directional(start, end) buffer and each line feature
 var pipe_SB = Intersects(pipe_fs, startBuffer);
 var pipe_EB = Intersects(pipe_fs, endBuffer);
 
 var startCode = [];
 var endCode = [];
 
-// review start features
+// review start pipeline features
 for (var pipe in pipe_SB){
   Insert(startCode, 0, pipe.PRSU_COD)
 }
 startCode = Count(Distinct(startCode))
 startCode = IIf(startCode >1, 'true', 'false' );
 
-// review end features
+// review end pipeline features
 for (var pipe in pipe_EB){
   Insert(endCode, 0, pipe.PRSU_COD)
 }
