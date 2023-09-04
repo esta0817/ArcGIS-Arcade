@@ -1,0 +1,30 @@
+// Review if there are two presure codes from adjacent pipelines
+// Pipeline, PRRG feature class in geodatabase
+var pipe_fs = FeatureSetByName($datastore, "PIPE", ["PRSU_COD"], true);
+var prrg_fs = FeatureSetByName($datastore, "PRRG", ["OBJECTID"], true);
+
+// find the start and end vertex of pipeline
+var startVertex = Geometry($feature).paths[0][0];
+var endVertex = Geometry($feature).paths[-1][-1];
+
+// make 0.01m buffer of pipeline vertex
+var startBuffer = Buffer(startVertex, 0.01, "meters")
+var endBuffer = Buffer(endVertex, 0.01, "meters")
+
+// create two adjacent pipeline features depending on direction buffer(start, end)
+var startIntersects = Intersects(pipe_fs, startBuffer);
+var endIntersects = Intersects(pipe_fs, endBuffer);
+
+// review whether adjacent pipelines have two or more pressure codes
+function chkPressure(chkBuffer, pipeIntersects){
+  if(Count(intersects(prrg_fs, chkBuffer)) > 0 ){return true;} //the pipeline feature have PRRG
+  var pipePressure = [];
+  for (var pipe in pipeIntersects){
+    Insert(pipePressure, 0, pipe.PRSU_COD);
+    pipePressure = Distinct(pipePressure);
+    if(Count(pipePressure) > 1) {return false;} //have two pressure codes
+  }
+  return true; //have only one pressure code
+}
+
+return ( chkPressure(startBuffer, startIntersects) && chkPressure(endBuffer, endIntersects) );
